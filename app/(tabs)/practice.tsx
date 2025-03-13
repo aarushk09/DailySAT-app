@@ -47,8 +47,7 @@ const Practice: React.FC = () => {
             <Button
               mode="contained"
               onPress={() => router.push({
-                pathname: '/topic',
-                params: { section: 'math', topicId: 'algebra', subtopic: '1' }
+                pathname: '/(tabs)/math',
               })}
               style={{ backgroundColor: "#f72585" }}
             >
@@ -60,7 +59,7 @@ const Practice: React.FC = () => {
         <Card style={styles.continueCard}>
           <Card.Content>
             <TouchableOpacity
-              onPress={() => router.push('/(tabs)/math')}
+              onPress={() => router.push('/(tabs)/english')}
               style={styles.touchableArea}
             >
               <View style={styles.continueHeader}>
@@ -79,7 +78,7 @@ const Practice: React.FC = () => {
           <Card.Actions>
             <Button
               mode="contained"
-              onPress={() => router.push('/(tabs)/math')}
+              onPress={() => router.push('/(tabs)/english')}
               style={{ backgroundColor: "#118ab2" }}
             >
               Continue

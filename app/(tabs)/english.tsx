@@ -9,63 +9,52 @@ import {
   Dimensions, 
   SafeAreaView 
 } from "react-native";
-import axios from "axios";
+import Questions from './sat_questions_parsed.json'; // Ensure the path is correct
 
 // Get screen dimensions
 const { width, height } = Dimensions.get('window');
 
-const MathQuestions: React.FC = () => {
+const Reading: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState<any | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showAnswer, setShowAnswer] = useState<boolean>(false);
 
-  const domains = [
-    "Advanced Math",
-    "Geometry and Trigonometry",
-    "Algebra",
-    "Problem-Solving and Data Analysis",
-  ];
-
-  // Function to get a random domain question
-  const getRandomQuestion = (questions: any[]) => {
-    const filteredQuestions = questions.filter((question: any) =>
-      domains.includes(question.domain)
-    );
-    const randomIndex = Math.floor(Math.random() * filteredQuestions.length);
-    return filteredQuestions[randomIndex];
+  // Function to get a random question
+  const getRandomQuestion = () => {
+    if (!Questions || !Questions.questions || !Array.isArray(Questions.questions) || Questions.questions.length === 0) {
+      setError("No questions available in the dataset");
+      return null;
+    }
+    
+    const randomIndex = Math.floor(Math.random() * Questions.questions.length);
+    return Questions.questions[randomIndex];
   };
 
-  const fetchQuestion = () => {
+  const loadQuestion = () => {
     setLoading(true);
     setShowAnswer(false);
     setSelectedOption(null);
     
-    axios
-      .get("https://api.jsonsilo.com/public/942c3c3b-3a0c-4be3-81c2-12029def19f5")
-      .then((response) => {
-        const allQuestions = response.data.math;
-        if (!Array.isArray(allQuestions)) {
-          throw new Error("Unexpected API response format: 'math' is missing or not an array");
-        }
-
-        const randomQuestion = getRandomQuestion(allQuestions);
-        if (randomQuestion) {
-          setCurrentQuestion(randomQuestion);
-        }
-
+    try {
+      const question = getRandomQuestion();
+      if (question) {
+        setCurrentQuestion(question);
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching data:", err, err.response?.data);
-        setError("Failed to fetch data");
+      } else {
+        setError("Failed to load a question");
         setLoading(false);
-      });
+      }
+    } catch (err) {
+      console.error("Error loading question:", err);
+      setError("Failed to load question data");
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchQuestion();
+    loadQuestion();
   }, []);
 
   const handleOptionSelect = (option: string) => {
@@ -77,7 +66,7 @@ const MathQuestions: React.FC = () => {
   };
 
   const handleNextQuestion = () => {
-    fetchQuestion();
+    loadQuestion();
   };
 
   if (loading) {
@@ -93,7 +82,7 @@ const MathQuestions: React.FC = () => {
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>{error}</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={fetchQuestion}>
+        <TouchableOpacity style={styles.retryButton} onPress={loadQuestion}>
           <Text style={styles.buttonText}>Try Again</Text>
         </TouchableOpacity>
       </View>
@@ -107,43 +96,44 @@ const MathQuestions: React.FC = () => {
           {currentQuestion ? (
             <>
               <View style={styles.header}>
-                <Text style={styles.title}>{currentQuestion.domain}</Text>
+                <Text style={styles.title}>{currentQuestion.domain || "Reading and Writing"}</Text>
                 <View style={styles.difficultyBadge}>
                   <Text style={styles.difficultyText}>
-                    {currentQuestion.difficulty || "Unknown"}
+                    {currentQuestion.difficulty || "SAT"}
                   </Text>
                 </View>
               </View>
 
+              {/* Question description/passage */}
+              {currentQuestion.questionDescription && (
+                <View style={styles.passageContainer}>
+                  <Text style={styles.passageTitle}>Passage:</Text>
+                  <Text style={styles.passage}>{currentQuestion.questionDescription}</Text>
+                </View>
+              )}
+
+              {/* Question */}
               <View style={styles.questionContainer}>
                 <Text style={styles.question}>
-                  {currentQuestion.question?.question || "No question text available"}
+                  {currentQuestion.question || "No question available"}
                 </Text>
-
-                {/* SVG Visual if available */}
-                {currentQuestion.visuals && currentQuestion.visuals.type !== "null" && (
-                  <View style={styles.visualContainer}>
-                    {/* You would render the SVG here */}
-                    <Text style={styles.visualText}>Visual aid available</Text>
-                  </View>
-                )}
               </View>
 
               {/* Answer Choices */}
-              {currentQuestion.question?.choices && (
+              {currentQuestion.options && (
                 <View style={styles.optionsContainer}>
-                  {Object.entries(currentQuestion.question.choices).map(([key, value]) => (
+                  {Object.entries(currentQuestion.options).map(([key, value]) => (
                     <TouchableOpacity
                       key={key}
                       style={[
                         styles.optionButton,
                         selectedOption === key && styles.selectedOption,
                         showAnswer && 
-                          key === currentQuestion.question.correct_answer && 
+                          key === currentQuestion.correctAnswer && 
                           styles.correctOption,
                         showAnswer && 
                           selectedOption === key && 
-                          key !== currentQuestion.question.correct_answer && 
+                          key !== currentQuestion.correctAnswer && 
                           styles.incorrectOption
                       ]}
                       onPress={() => handleOptionSelect(key)}
@@ -157,11 +147,11 @@ const MathQuestions: React.FC = () => {
               )}
 
               {/* Explanation */}
-              {showAnswer && currentQuestion.question?.explanation && (
+              {showAnswer && currentQuestion.rationale && (
                 <View style={styles.explanationContainer}>
                   <Text style={styles.explanationTitle}>Explanation:</Text>
                   <Text style={styles.explanation}>
-                    {currentQuestion.question.explanation}
+                    {currentQuestion.rationale}
                   </Text>
                 </View>
               )}
@@ -188,9 +178,9 @@ const MathQuestions: React.FC = () => {
           ) : (
             <View style={styles.noQuestionsContainer}>
               <Text style={styles.noQuestionsText}>
-                No questions available for the selected domains.
+                No questions available.
               </Text>
-              <TouchableOpacity style={styles.button} onPress={fetchQuestion}>
+              <TouchableOpacity style={styles.button} onPress={loadQuestion}>
                 <Text style={styles.buttonText}>Try Again</Text>
               </TouchableOpacity>
             </View>
@@ -237,7 +227,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "#e0e0e0",
   },
   title: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#2c3e50",
     flex: 1,
@@ -253,6 +243,28 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 14,
   },
+  passageContainer: {
+    backgroundColor: "#f9f9f9",
+    borderRadius: 10,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  passageTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#2c3e50",
+    marginBottom: 10,
+  },
+  passage: {
+    fontSize: 16,
+    lineHeight: 24,
+    color: "#2c3e50",
+  },
   questionContainer: {
     backgroundColor: "white",
     borderRadius: 10,
@@ -266,19 +278,9 @@ const styles = StyleSheet.create({
   },
   question: {
     fontSize: 18,
+    fontWeight: "500",
     lineHeight: 26,
     color: "#2c3e50",
-  },
-  visualContainer: {
-    marginTop: 15,
-    padding: 10,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  visualText: {
-    fontStyle: "italic",
-    color: "#666",
   },
   optionsContainer: {
     marginBottom: 20,
@@ -294,7 +296,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   selectedOption: {
     backgroundColor: "#e1f0ff",
@@ -382,10 +384,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
-  option: {
-    fontSize: 16,
-    marginVertical: 5,
-  },
   errorText: {
     color: "#dc3545",
     fontSize: 18,
@@ -393,4 +391,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MathQuestions;
+export default Reading;
