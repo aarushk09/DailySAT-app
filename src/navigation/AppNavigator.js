@@ -8,6 +8,7 @@ import TutorialsScreen from '../screens/TutorialsScreen';
 import TopicScreen from '../screens/TopicScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import CustomDrawerContent from './CustomDrawerContent';
+import PracticeScreen from '../screens/Practice';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -43,6 +44,14 @@ const AppNavigator = () => {
         options={{
           title: 'Dashboard',
           drawerIcon: ({ color }) => <Ionicons name="home-outline" size={22} color={color} />,
+        }}
+      />
+      <Drawer.Screen 
+        name="Practice"
+        component={PracticeScreen}
+        options={{
+          title: 'Practice Knowledge',
+          drawerIcon: ({ color }) => <Ionicons name="color-filter-outline" size={22} color={color} />
         }}
       />
       <Drawer.Screen

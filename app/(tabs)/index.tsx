@@ -8,7 +8,7 @@ export default function HomeScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.welcomeText}>Welcome back, Alex!</Text>
+        <Text style={styles.welcomeText}>Welcome back, Alex John!</Text>
         <Text style={styles.dateText}>March 9, 2025</Text>
       </View>
       
