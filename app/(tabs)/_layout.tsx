@@ -85,6 +85,20 @@ export default function Layout() {
               drawerIcon: ({ color }) => <Ionicons name="person-outline" size={22} color={color} />,
             }}
           />
+          <Drawer.Screen 
+            name="practice"
+            options={{
+              title: "Practice",
+              drawerIcon: ({color}) => <Ionicons name="american-football-outline" size={22} color={color} />
+            }}
+          />
+          {/* <Drawer.Screen 
+            name="reading"
+            options={{
+              title: "Reading",
+              drawerIcon: ({color}) => null
+            }}
+          /> */}
         </Drawer>
       </PaperProvider>
     </GestureHandlerRootView>

@@ -12,7 +12,7 @@ const ProfileScreen = () => {
           label="AJ"
           style={styles.avatar}
         />
-        <Text style={styles.name}>Alex Johnson</Text>
+        <Text style={styles.name}>Alex John</Text>
         <Text style={styles.email}>alex.j@example.com</Text>
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
