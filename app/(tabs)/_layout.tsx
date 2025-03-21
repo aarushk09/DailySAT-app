@@ -99,6 +99,13 @@ export default function Layout() {
               drawerIcon: ({color}) => null
             }}
           /> */}
+          <Drawer.Screen 
+            name="tutor"
+            options={{
+              title: "AI Tutor",
+              drawerIcon: ({color}) => <Ionicons name="laptop" size={22} color={color} />
+            }}
+          />
         </Drawer>
       </PaperProvider>
     </GestureHandlerRootView>
