@@ -5,7 +5,7 @@ module.exports = function(api) {
       plugins: [
         'react-native-reanimated/plugin',
         'expo-router/babel',
-        'react-native-dotenv'
+        'module:react-native-dotenv'
       ],
     };
   };

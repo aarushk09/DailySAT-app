@@ -16,7 +16,7 @@ import Config from "react-native-config";
 
 const { width, height } = Dimensions.get("window");
 
-const groq = new Groq({ apiKey: Config.GROQ_API_KEY, dangerouslyAllowBrowser: true });
+const groq = new Groq({ apiKey: "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", dangerouslyAllowBrowser: true });
 
 const Tutor: React.FC = () => {
     const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);

@@ -106,6 +106,13 @@ export default function Layout() {
               drawerIcon: ({color}) => <Ionicons name="laptop" size={22} color={color} />
             }}
           />
+          <Drawer.Screen 
+            name="vocab"
+            options={{
+              title: "Vocab Training",
+              drawerIcon: ({color}) => <Ionicons name="airplane" size={22} color={color} />
+            }}
+          />
         </Drawer>
       </PaperProvider>
     </GestureHandlerRootView>
