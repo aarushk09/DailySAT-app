@@ -12,7 +12,7 @@ import {
 import Groq from "groq-sdk";
 import { SafeAreaView } from "react-native-safe-area-context";
 // import {GROQ_API_KEY} from "@env";
-import Config from "react-native-config";
+// import Config from "react-native-config";
 
 const { width, height } = Dimensions.get("window");
 
