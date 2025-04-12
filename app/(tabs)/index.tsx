@@ -182,8 +182,8 @@
 // });
 
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import { signIn } from 'next-auth/react'; // Import signIn from next-auth/react
+import { View, TextInput, TouchableOpacity, Text, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform, Image, ActivityIndicator } from 'react-native';
+import { signIn } from 'next-auth/react';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -201,7 +201,6 @@ export default function LoginScreen() {
     setLoading(true);
     setError('');
 
-    // Use Promise-based syntax to handle async operation
     signIn('credentials', {
       redirect: false,
       email,
@@ -211,7 +210,6 @@ export default function LoginScreen() {
         if (result?.error) {
           setError(result.error);
         } else {
-          // Successfully signed in, handle the UI or redirect here
           console.log('Logged in successfully');
         }
       })
@@ -229,7 +227,6 @@ export default function LoginScreen() {
     setLoading(true);
     setError('');
 
-    // Google login does not need result handling, it redirects automatically
     signIn('google', { callbackUrl: '/' })
       .catch((err) => {
         console.error('Google login error:', err);
@@ -241,52 +238,235 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={(text) => setEmail(text)}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={(text) => setPassword(text)}
-        secureTextEntry
-      />
-      <Button
-        title={loading ? 'Loading...' : 'Login'}
-        onPress={handleLogin}
-        disabled={loading}
-      />
-      <Button
-        title={loading ? 'Loading...' : 'Login with Google'}
-        onPress={handleGoogleLogin}
-        disabled={loading}
-      />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-    </View>
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoid}
+      >
+        <View style={styles.container}>
+          <View style={styles.logoContainer}>
+            <Image 
+              source={{ uri: 'https://via.placeholder.com/150' }} 
+              style={styles.logo} 
+              resizeMode="contain"
+            />
+            {/* <Text style={styles.appTitle}>DailySat</Text> */}
+          </View>
+          
+          <View style={styles.formContainer}>
+            <Text style={styles.welcomeText}>Welcome Back</Text>
+            <Text style={styles.subText}>Sign in to continue</Text>
+            
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Email</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your email"
+                placeholderTextColor="#999"
+                value={email}
+                onChangeText={(text) => setEmail(text)}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+            
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Password</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your password"
+                placeholderTextColor="#999"
+                value={password}
+                onChangeText={(text) => setPassword(text)}
+                secureTextEntry
+              />
+            </View>
+            
+            <TouchableOpacity style={styles.forgotPassword}>
+              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+            </TouchableOpacity>
+            
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+            
+            <TouchableOpacity 
+              style={styles.loginButton} 
+              onPress={handleLogin}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#fff" size="small" />
+              ) : (
+                <Text style={styles.loginButtonText}>Login</Text>
+              )}
+            </TouchableOpacity>
+            
+            <View style={styles.orContainer}>
+              <View style={styles.line} />
+              <Text style={styles.orText}>OR</Text>
+              <View style={styles.line} />
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.googleButton} 
+              onPress={handleGoogleLogin}
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#4285F4" size="small" />
+              ) : (
+                <Text style={styles.googleButtonText}>Continue with Google</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Don't have an account? </Text>
+            <TouchableOpacity>
+              <Text style={styles.signUpText}>Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  keyboardAvoid: {
+    flex: 1,
+  },
   container: {
-    padding: 20,
+    flex: 1,
+    paddingHorizontal: 24,
+    justifyContent: 'space-between',
+    paddingVertical: 20,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginTop: 40,
+    marginBottom: 20,
+  },
+  logo: {
+    width: 100,
+    height: 100,
+  },
+  appTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginTop: 10,
+    color: '#333',
+  },
+  formContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  welcomeText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
+  subText: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 30,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 8,
+    fontWeight: '500',
   },
   input: {
-    height: 40,
-    borderColor: '#ccc',
+    height: 55,
+    borderColor: '#e1e1e1',
     borderWidth: 1,
-    marginBottom: 10,
-    paddingLeft: 8,
-    borderRadius: 4,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  forgotPassword: {
+    alignSelf: 'flex-end',
+    marginBottom: 24,
+  },
+  forgotPasswordText: {
+    color: '#4285F4',
+    fontSize: 14,
+  },
+  loginButton: {
+    backgroundColor: '#4285F4',
+    borderRadius: 8,
+    height: 55,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+    shadowColor: '#4285F4',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  loginButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  orContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#e1e1e1',
+  },
+  orText: {
+    marginHorizontal: 10,
+    color: '#666',
+  },
+  googleButton: {
+    flexDirection: 'row',
+    borderColor: '#e1e1e1',
+    borderWidth: 1,
+    borderRadius: 8,
+    height: 55,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  googleButtonText: {
+    color: '#4285F4',
+    fontSize: 16,
+    fontWeight: '600',
   },
   error: {
-    color: 'red',
-    marginTop: 10,
+    color: '#FF3B30',
     textAlign: 'center',
+    marginBottom: 16,
   },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 30,
+    paddingBottom: 20,
+  },
+  footerText: {
+    color: '#666',
+    fontSize: 14,
+  },
+  signUpText: {
+    color: '#4285F4',
+    fontWeight: '600',
+    fontSize: 14,
+  }
 });

@@ -71,20 +71,20 @@ export default function Layout() {
               drawerIcon: ({ color }) => <Ionicons name="home-outline" size={22} color={color} />,
             }}
           />
-          <Drawer.Screen
+          {/* <Drawer.Screen
             name="tutorials"
             options={{
               title: 'Learning Paths',
               drawerIcon: ({ color }) => <Ionicons name="book-outline" size={22} color={color} />,
             }}
-          />
-          <Drawer.Screen
+          /> */}
+          {/* <Drawer.Screen
             name="profile"
             options={{
               title: 'Profile',
               drawerIcon: ({ color }) => <Ionicons name="person-outline" size={22} color={color} />,
             }}
-          />
+          /> */}
           <Drawer.Screen 
             name="practice"
             options={{
